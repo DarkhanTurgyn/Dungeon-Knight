@@ -47,16 +47,12 @@ class Creature(AbstractObject):
         self.sprite = icon
         self.stats = stats
         self.position = position
-        self.static_pos = (7,7)
         self.calc_max_HP()
         self.hp = self.max_hp
 
     def calc_max_HP(self):
         self.max_hp = 5 + self.stats["endurance"] * 2
     
-    def draw(self, display):
-        display.blit(self.sprite, self.coordinates(self.static_pos, display.engine.sprite_size))
-
 
 class Enemy(Creature, Interactive):
 
@@ -65,8 +61,17 @@ class Enemy(Creature, Interactive):
         self.xp = xp
 
     def interact(self, engine, hero):
-        # FIXME fight
-        pass
+        # print("Enemey heatl: " + str(self.hp))
+        # print(f"HP Before: {hero.hp}")
+        hero.hp -= self.hp
+        # print(f"HP After: {hero.hp}")
+        if hero.hp <= 0:
+            engine.game_process = False
+            engine.notify('Потрачено')
+        else:
+            hero.exp += self.xp//2
+            hero.level_up(engine)
+
 
 
 class Hero(Creature):
@@ -74,19 +79,25 @@ class Hero(Creature):
     def __init__(self, stats, icon):
         pos = [1, 1]
         super().__init__(icon, stats, pos)
+        self.static_pos = (7,7)
         self.level = 1
         self.exp = 0
         self.gold = 0
 
-    def level_up(self):
+
+    def level_up(self, engine):
         while self.exp >= 100 * (2 ** (self.level - 1)):
-            yield "level up!"
             self.level += 1
             self.stats["strength"] += 2
             self.stats["endurance"] += 2
             self.calc_max_HP()
             self.hp = self.max_hp
+            engine.notify(f"Level Up: {self.level}")
+            engine.notify("HP restored")
+            engine.notify("Strength & Endurance upgraded")
     
+    def draw(self, display):
+        display.blit(self.sprite, self.coordinates(self.static_pos, display.engine.sprite_size))
 
 
 
@@ -148,6 +159,10 @@ class Effect(Hero):
     @property
     def sprite(self):
         return self.base.sprite
+    
+    @property
+    def static_pos(self):
+        return self.base.static_pos
 
     @abstractmethod
     def apply_effect(self):
