@@ -25,13 +25,16 @@ class AbstractObject(ABC):
         self.position = position
 
     def draw(self, display):
-        display.blit(self.sprite, self.position)
+        display.blit(self.sprite, self.coordinates(self.position, display.engine.sprite_size))
+
+    def coordinates(self, pos, sz):
+        return (pos[0]*sz, pos[1]*sz)
 
 
 class Ally(AbstractObject, Interactive):
 
     def __init__(self, icon, action, position):
-        super().__init__(icon, position)
+        super().__init__(icon, position);
         self.action = action
 
     def interact(self, engine, hero):
@@ -41,24 +44,28 @@ class Ally(AbstractObject, Interactive):
 class Creature(AbstractObject):
 
     def __init__(self, icon, stats, position):
-        super().__init__(icon, position)
+        self.sprite = icon
         self.stats = stats
+        self.position = position
+        self.static_pos = (7,7)
         self.calc_max_HP()
         self.hp = self.max_hp
 
     def calc_max_HP(self):
         self.max_hp = 5 + self.stats["endurance"] * 2
+    
+    def draw(self, display):
+        display.blit(self.sprite, self.coordinates(self.static_pos, display.engine.sprite_size))
 
 
-#-------------------------------------------------------------
-# Enemy::interact
-#-------------------------------------------------------------
 class Enemy(Creature, Interactive):
+
     def __init__(self, icon, stats, xp, position):
-        super().__init__(icon, stats, position)
+        super().__init__(icon, stats, position);
         self.xp = xp
 
     def interact(self, engine, hero):
+        # FIXME fight
         pass
 
 
@@ -66,10 +73,10 @@ class Hero(Creature):
 
     def __init__(self, stats, icon):
         pos = [1, 1]
+        super().__init__(icon, stats, pos)
         self.level = 1
         self.exp = 0
         self.gold = 0
-        super().__init__(icon, stats, pos)
 
     def level_up(self):
         while self.exp >= 100 * (2 ** (self.level - 1)):
@@ -79,6 +86,8 @@ class Hero(Creature):
             self.stats["endurance"] += 2
             self.calc_max_HP()
             self.hp = self.max_hp
+    
+
 
 
 class Effect(Hero):
@@ -145,5 +154,28 @@ class Effect(Hero):
         pass
 
 
-# FIXME
-# add classes
+class Berserk(Effect):
+    
+    def apply_effect(self):
+        self.hp += 50
+        self.stats["strength"] += 7
+        self.stats["endurance"] += 7
+        self.stats["intelligence"] -= 3
+        self.stats["luck"] += 7
+    
+
+class Blessing(Effect):
+
+    def apply_effect(self):
+        self.stats["strength"] += 2
+        self.stats["endurance"] += 2
+        self.stats["intelligence"] += 2
+        self.stats["luck"] += 2    
+
+
+class Weakness(Effect):
+
+    def apply_effect(self):
+        self.stats["strength"] -= 4
+        self.stats["endurance"] -= 4
+        self.stats["luck"] -= 4

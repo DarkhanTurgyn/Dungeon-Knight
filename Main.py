@@ -35,11 +35,11 @@ def create_game(sprite_size, is_new):
         Service.reload_game(engine, hero)
         drawer = SE.GameSurface((640, 480), pygame.SRCALPHA, (0, 480),
                                 SE.ProgressBar((640, 120), (640, 0),
-                                               SE.InfoWindow((160, 600), (50, 50),
-                                                             SE.HelpWindow((700, 500), pygame.SRCALPHA, (0, 0),
-                                                                           SE.ScreenHandle(
-                                                                               (0, 0))
-                                                                           ))))
+                                                SE.InfoWindow((160, 600), (50, 50),
+                                                                SE.HelpWindow((700, 500), pygame.SRCALPHA, (0, 0),
+                                                                            SE.ScreenHandle(
+                                                                                (0, 0))
+                                                                            ))))
 
     else:
         engine.sprite_size = sprite_size
@@ -54,7 +54,7 @@ def create_game(sprite_size, is_new):
     iteration = 0
 
 
-size = 60
+size = 30
 create_game(size, True)
 
 while engine.working:
@@ -66,31 +66,32 @@ while engine.working:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_h:
                     engine.show_help = not engine.show_help
+                if event.key == pygame.K_KP_PLUS:
+                    size = size + 1
+                    create_game(size, False)
+                if event.key == pygame.K_KP_MINUS:
+                    size = size - 1
+                    create_game(size, False)
                 if event.key == pygame.K_r:
                     create_game(size, True)
                 if event.key == pygame.K_ESCAPE:
                     engine.working = False
-                if event.key == pygame.K_RETURN:
-                    create_game()
-        pressed = pygame.key.get_pressed()
-        if pressed[pygame.K_UP]:
-            engine.move_up()
-            iteration += 1
-        if pressed[pygame.K_DOWN]:
-            engine.move_down()
-            iteration += 1
-        if pressed[pygame.K_LEFT]:
-            engine.move_left()
-            iteration += 1
-        if pressed[pygame.K_RIGHT]:
-            engine.move_right()
-            iteration += 1
-        if pressed[pygame.K_KP_PLUS]:
-            size = size + 1
-            create_game(size, False)
-        if pressed[pygame.K_KP_MINUS]:
-            size = size - 1
-            create_game(size, False)
+                if engine.game_process:
+                    if event.key == pygame.K_UP:
+                        engine.move_up()
+                        iteration += 1
+                    elif event.key == pygame.K_DOWN:
+                        engine.move_down()
+                        iteration += 1
+                    elif event.key == pygame.K_LEFT:
+                        engine.move_left()
+                        iteration += 1
+                    elif event.key == pygame.K_RIGHT:
+                        engine.move_right()
+                        iteration += 1
+                else:
+                    if event.key == pygame.K_RETURN:
+                        create_game()
     else:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
