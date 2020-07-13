@@ -194,3 +194,18 @@ class Weakness(Effect):
         self.stats["strength"] -= 4
         self.stats["endurance"] -= 4
         self.stats["luck"] -= 4
+
+
+class Curse(Effect):
+    
+    def apply_effect(self):
+        self.stats["strength"] -= 2
+        self.stats["endurance"] -= 2
+        self.stats["luck"] -= 2
+        self.stats["intelligence"] -= 2
+
+
+class EvilEye(Effect):
+    
+    def apply_effect(self):
+        self.stats["luck"] -= 10

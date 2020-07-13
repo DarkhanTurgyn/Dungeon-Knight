@@ -8,6 +8,7 @@ colors = {
     "green": (0, 255, 0, 255),
     "blue": (0, 0, 255, 255),
     "wooden": (153, 92, 0, 255),
+    "wooden2": (153, 110, 0, 255)
 }
 
 
@@ -123,10 +124,20 @@ class ProgressBar(ScreenHandle):
         self.blit(font.render(f'{self.engine.hero.stats["luck"]}', True, colors["black"]),
                   (480, 70))
 
-        self.blit(font.render(f'SCORE', True, colors["black"]),
+        self.blit(font.render(f'Endu', True, colors["black"]),
                   (550, 30))
-        self.blit(font.render(f'{self.engine.score:.4f}', True, colors["black"]),
+        self.blit(font.render(f'Intel', True, colors["black"]),
                   (550, 70))
+
+        self.blit(font.render(f'{self.engine.hero.stats["endurance"]}', True, colors["black"]),
+                  (610, 30))
+        self.blit(font.render(f'{self.engine.hero.stats["intelligence"]}', True, colors["black"]),
+                  (610, 70))
+
+        self.blit(font.render(f'SCORE', True, colors["black"]),
+                  (670, 30))
+        self.blit(font.render(f'{self.engine.score:.4f}', True, colors["black"]),
+                  (670, 70))
 
         super().draw(canvas)
 
@@ -145,7 +156,7 @@ class InfoWindow(ScreenHandle):
         self.data.append(f"> {str(value)}")
 
     def draw(self, canvas):
-        self.fill(colors["wooden"])
+        self.fill(colors["wooden2"])
         size = self.get_size()
 
         font = pygame.font.SysFont("comicsansms", 10)
